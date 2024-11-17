@@ -2,8 +2,7 @@ import os
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 from dotenv import load_dotenv
-from ratelimit import limits, sleep_and_retry
-from firecrawl import FireCrawler  # Placeholder import
+from firecrawl import FirecrawlApp
 import time
 
 # Load environment variables
@@ -11,32 +10,25 @@ load_dotenv()
 
 app = Flask(__name__)
 
-# Configure CORS
-allowed_origins = os.getenv('ALLOWED_ORIGINS', '').split(',')
-CORS(app, origins=allowed_origins)
+# Configure CORS to allow all origins
+CORS(app)
 
 # Configure app
-app.config['SECRET_KEY'] = os.getenv('SECRET_KEY', 'default-secret-key')
-RATE_LIMIT = int(os.getenv('RATE_LIMIT', 100))
-CRAWLER_TIMEOUT = int(os.getenv('CRAWLER_TIMEOUT', 30))
+app.config['FIRECRAWL_SECRET_KEY'] = os.getenv('FIRECRAWL_SECRET_KEY', 'default-secret-key')
+app.config['TOGETHER_SECRET_KEY'] = os.getenv('TOGETHER_SECRET_KEY', 'default-secret-key')
 
-# Initialize FireCrawler (placeholder)
-crawler = FireCrawler()
+
+
 
 def get_crawler():
     """
     Factory function to get crawler instance
     Could be extended to handle multiple crawler instances or configuration
     """
-    return FireCrawler()
+    return FirecrawlApp()
 
-@sleep_and_retry
-@limits(calls=RATE_LIMIT, period=60)
-def rate_limited_crawler(url):
-    """Rate limited crawler function"""
-    crawler = get_crawler()
-    # Add actual crawling logic here
-    return {"url": url, "content": f"Crawled content from {url}", "timestamp": time.strftime("%Y-%m-%dT%H:%M:%SZ")}
+# Initialize FireCrawler (placeholder)
+crawler = get_crawler()
 
 @app.route('/echo', methods=['POST'])
 def echo():
@@ -54,7 +46,7 @@ def crawl():
         return jsonify({"error": "URL is required"}), 400
     
     try:
-        result = rate_limited_crawler(url)
+        result = crawler.scrape_url(url, params={'formats': ['markdown', 'html']})
         return jsonify(result)
     except Exception as e:
         app.logger.error(f"Error crawling {url}: {str(e)}")
@@ -68,12 +60,3 @@ def health_check():
         "timestamp": time.strftime("%Y-%m-%dT%H:%M:%SZ")
     })
 
-@app.errorhandler(429)
-def ratelimit_handler(e):
-    """Handle rate limit exceeded errors"""
-    return jsonify({"error": "Rate limit exceeded. Please try again later."}), 429
-
-if __name__ == '__main__':
-    # Get port from environment variable (Heroku sets this automatically)
-    port = int(os.getenv('PORT', 5000))
-    app.run(host='0.0.0.0', port=port)
