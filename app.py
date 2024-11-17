@@ -113,3 +113,5 @@ def set_webhook():
 def send_welcome(message):
     bot.reply_to(message, "Hello! I'm your bot.")
 
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=int(os.environ.get('PORT', 5000)))
