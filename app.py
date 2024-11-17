@@ -61,7 +61,7 @@ def findpeople():
         system_prompt = "You are given a list of people and a list of requirements that your looking for, based on the second input that your getting, I want you to match the people that match the input that you are being given in the list of people. The output should be a list of people that match the requirements. The list of people is: " + result['markdown']
         together_response = together.chat.completions.create(
             model="meta-llama/Meta-Llama-3-70B-Instruct-Turbo",
-            messages=[{"role": "system", "content": system_prompt},  {"role": "user", "content": "The requirements are: " + requirements+"\n\nThe output should be a list of people that match the requirements in a list format."}]
+            messages=[{"role": "system", "content": system_prompt},  {"role": "user", "content": "The requirements are: " + requirements+"\n\nThe output should be a list of people that match the requirements in a list format. Remove all information except contact information, relevant experience condensed down to 1 line and the cost for the service."}]
         )
         
 

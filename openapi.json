@@ -1,155 +1,126 @@
 {
-    "openapi": "3.0.0",
-    "info": {
-      "title": "Firecrawl Flask API",
-      "description": "A Flask API that provides web crawling capabilities using Firecrawl",
-      "version": "1.0.0"
-    },
-    "servers": [
-      {
-        "url": "http://localhost:5000",
-        "description": "Development server"
-      }
-    ],
-    "paths": {
-      "/echo": {
-        "post": {
-          "summary": "Echo back the input text",
-          "requestBody": {
-            "required": true,
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "text": {
-                      "type": "string",
-                      "example": "Arvind"
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "responses": {
-            "200": {
-              "description": "Successfully echoed text",
-              "content": {
-                "application/json": {
-                  "schema": {
-                    "type": "object",
-                    "properties": {
-                      "message": {
-                        "type": "string",
-                        "example": "Arvind"
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-      },
-      "/crawl": {
-        "post": {
-          "summary": "Crawl a specified website",
-          "requestBody": {
-            "required": true,
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "url": {
-                      "type": "string",
-                      "example": "https://example.com"
-                    }
-                  },
-                  "required": ["url"]
-                }
-              }
-            }
-          },
-          "responses": {
-            "200": {
-              "description": "Successfully crawled website",
-              "content": {
-                "application/json": {
-                  "schema": {
-                    "type": "object",
-                    "properties": {
-                      "url": {
-                        "type": "string"
-                      },
-                      "content": {
-                        "type": "string"
-                      },
-                      "timestamp": {
-                        "type": "string",
-                        "format": "date-time"
-                      }
-                    }
-                  }
-                }
-              }
-            },
-            "400": {
-              "description": "Bad request - URL is missing",
-              "content": {
-                "application/json": {
-                  "schema": {
-                    "type": "object",
-                    "properties": {
-                      "error": {
-                        "type": "string",
-                        "example": "URL is required"
-                      }
-                    }
-                  }
-                }
-              }
-            },
-            "500": {
-              "description": "Internal server error",
-              "content": {
-                "application/json": {
-                  "schema": {
-                    "type": "object",
-                    "properties": {
-                      "error": {
-                        "type": "string"
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-      },
-      "/health": {
-        "get": {
-          "summary": "Check API health",
-          "responses": {
-            "200": {
-              "description": "API is healthy",
-              "content": {
-                "application/json": {
-                  "schema": {
-                    "type": "object",
-                    "properties": {
-                      "status": {
-                        "type": "string",
-                        "example": "healthy"
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Firecrawl API",
+    "description": "API for crawling websites and finding people based on requirements",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://ibmhack-46f00826304f.herokuapp.com/",
+      "description": "Production server"
     }
+  ],
+  "paths": {
+    "/echo": {
+      "post": {
+        "summary": "Echo Test Endpoint",
+        "description": "Simple echo endpoint to test the API",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "text": {
+                    "type": "string",
+                    "description": "Text to echo back"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/findpeople": {
+      "post": {
+        "summary": "Find People",
+        "description": "Endpoint to crawl websites and find people matching specific requirements",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "requirements": {
+                    "type": "string",
+                    "description": "Requirements to match people against"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "markdown": {
+                      "type": "string",
+                      "description": "Crawled and processed results"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/health": {}
   }
+}
