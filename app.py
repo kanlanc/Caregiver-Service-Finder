@@ -58,10 +58,10 @@ def findpeople():
         result = crawler.scrape_url("https://www.carelinx.com/caregivers/ca/sunnyvale", params={'formats': ['markdown']})
 
         # Send the result to the Together API, with a system prompt to summarize the content
-        system_prompt = "You are given a list of people and a list of requirements that your looking for, based on the second input that your getting, I want you to match the people that match the input that you are being given in the list of people. The output should be a list of people that match the requirements."
+        system_prompt = "You are given a list of people and a list of requirements that your looking for, based on the second input that your getting, I want you to match the people that match the input that you are being given in the list of people. The output should be a list of people that match the requirements. The list of people is: " + result
         together_response = together.chat.completions.create(
             model="meta-llama/Meta-Llama-3-70B-Instruct-Turbo",
-            messages=[{"role": "system", "content": system_prompt},  {"role": "user", "content": result}]
+            messages=[{"role": "system", "content": system_prompt},  {"role": "user", "content": "The requirements are: " + requirements}]
         )
         
 
