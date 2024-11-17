@@ -47,6 +47,8 @@ def crawl():
     
     try:
         result = crawler.scrape_url(url, params={'formats': ['markdown', 'html']})
+        # ADD this to together API and send back the result that your gonna get to client
+        
         return jsonify(result)
     except Exception as e:
         app.logger.error(f"Error crawling {url}: {str(e)}")
