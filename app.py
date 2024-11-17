@@ -25,7 +25,7 @@ def get_crawler():
     Factory function to get crawler instance
     Could be extended to handle multiple crawler instances or configuration
     """
-    return FirecrawlApp()
+    return FirecrawlApp(api_key=app.config['FIRECRAWL_SECRET_KEY'])
 
 # Initialize FireCrawler (placeholder)
 crawler = get_crawler()
@@ -48,7 +48,7 @@ def crawl():
     try:
         result = crawler.scrape_url(url, params={'formats': ['markdown', 'html']})
         # ADD this to together API and send back the result that your gonna get to client
-        
+
         return jsonify(result)
     except Exception as e:
         app.logger.error(f"Error crawling {url}: {str(e)}")
