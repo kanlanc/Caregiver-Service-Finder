@@ -9,4 +9,3 @@ lxml==4.9.3
 firecrawl
 together
 telebot
-logging
