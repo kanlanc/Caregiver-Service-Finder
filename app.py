@@ -106,6 +106,10 @@ def scrape_grant_info():
         # Scrape the grant webpage
         result = crawler.scrape_url(grant_url, params={'formats': ['markdown']})
         
+        # Truncate the content to roughly 6000 tokens (approximately 8000 characters)
+        # This leaves room for the system prompt and other overhead
+        content = result['markdown'][:8000] + "..." if len(result['markdown']) > 8000 else result['markdown']
+        
         # Process the content using Together API
         system_prompt = """You are a grant analysis expert. Given the content from a grant-related webpage, 
         extract and organize the following key information:
@@ -120,13 +124,14 @@ def scrape_grant_info():
             model="meta-llama/Meta-Llama-3-70B-Instruct-Turbo",
             messages=[
                 {"role": "system", "content": system_prompt},
-                {"role": "user", "content": result['markdown']}
+                {"role": "user", "content": content}
             ]
         )
         
         return jsonify({
             "analysis": together_response.choices[0].message.content,
-            "raw_content": result['markdown']
+            "raw_content": content,
+            "truncated": len(content) < len(result['markdown'])
         })
         
     except Exception as e:
