@@ -1,20 +1,58 @@
 {
   "openapi": "3.0.0",
   "info": {
-    "title": "Firecrawl API",
-    "description": "API for crawling websites and finding people based on requirements",
-    "version": "1.0.0"
+    "title": "Grant and People Search API",
+    "version": "1.0.0",
+    "description": "API for searching people, processing grants, and managing Telegram bot interactions"
   },
   "servers": [
     {
-      "url": "https://ibmhack-46f00826304f.herokuapp.com/",
+      "url": "https://ibmhack-46f00826304f.herokuapp.com",
       "description": "Production server"
     }
   ],
   "paths": {
+    "/": {
+      "get": {
+        "summary": "Root endpoint",
+        "description": "Returns API status and available endpoints",
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "example": "running"
+                    },
+                    "endpoints": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      },
+                      "example": [
+                        "/health",
+                        "/echo",
+                        "/findpeople",
+                        "/set_webhook",
+                        "/scrape_grant_info",
+                        "/generate_nsf_grant"
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/echo": {
       "post": {
-        "summary": "Echo Test Endpoint",
+        "summary": "Echo endpoint",
         "description": "Simple echo endpoint to test the API",
         "requestBody": {
           "required": true,
@@ -24,8 +62,7 @@
                 "type": "object",
                 "properties": {
                   "text": {
-                    "type": "string",
-                    "description": "Text to echo back"
+                    "type": "string"
                   }
                 }
               }
@@ -34,7 +71,7 @@
         },
         "responses": {
           "200": {
-            "description": "Successful response",
+            "description": "Echo response",
             "content": {
               "application/json": {
                 "schema": {
@@ -53,8 +90,8 @@
     },
     "/findpeople": {
       "post": {
-        "summary": "Find People",
-        "description": "Endpoint to crawl websites and find people matching specific requirements",
+        "summary": "Find people matching requirements",
+        "description": "Crawls websites to find people matching specified requirements",
         "requestBody": {
           "required": true,
           "content": {
@@ -77,34 +114,13 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object",
-                  "properties": {
-                    "markdown": {
-                      "type": "string",
-                      "description": "Crawled and processed results"
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Bad request",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "error": {
-                      "type": "string"
-                    }
-                  }
+                  "type": "object"
                 }
               }
             }
           },
           "500": {
-            "description": "Internal server error",
+            "description": "Server error",
             "content": {
               "application/json": {
                 "schema": {
@@ -121,6 +137,174 @@
         }
       }
     },
-    "/health": {}
+    "/health": {
+      "get": {
+        "summary": "Health check endpoint",
+        "description": "Returns the health status of the API",
+        "responses": {
+          "200": {
+            "description": "Health status",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "example": "healthy"
+                    },
+                    "timestamp": {
+                      "type": "string",
+                      "format": "date-time"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/scrape_grant_info": {
+      "post": {
+        "summary": "Scrape grant information",
+        "description": "Scrapes and processes grant-related information from a URL",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "url": {
+                    "type": "string",
+                    "description": "URL of the grant page to scrape"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Processed grant information",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "analysis": {
+                      "type": "string"
+                    },
+                    "raw_content": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Missing URL"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      }
+    },
+    "/generate_nsf_grant": {
+      "post": {
+        "summary": "Generate NSF grant draft",
+        "description": "Generates a draft NSF grant proposal based on provided information",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "project_title",
+                  "research_objectives",
+                  "methodology",
+                  "budget",
+                  "timeline"
+                ],
+                "properties": {
+                  "project_title": {
+                    "type": "string"
+                  },
+                  "research_objectives": {
+                    "type": "string"
+                  },
+                  "methodology": {
+                    "type": "string"
+                  },
+                  "budget": {
+                    "type": "string"
+                  },
+                  "timeline": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Generated grant draft",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "grant_draft": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Missing required fields"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      }
+    },
+    "/set_webhook": {
+      "get": {
+        "summary": "Set Telegram webhook",
+        "description": "Sets up the webhook for Telegram bot integration",
+        "responses": {
+          "200": {
+            "description": "Webhook successfully set",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Failed to set webhook"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "ApiKeyAuth": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "X-API-Key"
+      }
+    }
   }
 }
