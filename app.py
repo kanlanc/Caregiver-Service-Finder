@@ -118,7 +118,7 @@ def scrape_grant_info():
         3. Key deadlines
         4. Required documentation
         5. Priority areas
-        Please format the response as a structured JSON object."""
+        Please format the response as a structured list."""
         
         together_response = together.chat.completions.create(
             model="meta-llama/Meta-Llama-3-70B-Instruct-Turbo",
